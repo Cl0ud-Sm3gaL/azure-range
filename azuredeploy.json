@@ -143,7 +143,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/SimuLand/master/",
+            "defaultValue": "https://raw.githubusercontent.com/Cl0ud-Sm3gaL/master/azure-range/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -213,25 +213,23 @@
         "subnetRange4": "192.168.0.0/24",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
 
-        "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
-
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
-        "dockerInstallScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-Docker.sh')]",
-        "prepareBoxScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
-        "enableWinAuditCategories": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
-        "enablePowerShellLoggingScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1')]",
-        "installAgentScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Sysmon.ps1')]",
-        "downloadSACLScript": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
-        "setSACLScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
-        "setIPAddressScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
+        "dockerInstallScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/bash/Install-Docker.sh')]",
+        "prepareBoxScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
+        "enableWinAuditCategories": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
+        "enablePowerShellLoggingScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1')]",
+        "installAgentScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/endpoint-software/Install-Sysmon.ps1')]",
+        "downloadSACLScript": "[uri(parameters('_artifactsLocation'), 'Set-AuditRule/Set-AuditRule.ps1')]",
+        "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
+        "setIPAddressScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
         
         "logstashSetupScript": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/scripts/Set-Logstash.sh', parameters('_artifactsLocationSasToken')))]",
-        "installLogShipperScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Log-Shipper.ps1')]",
+        "installLogShipperScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/endpoint-software/Install-Log-Shipper.ps1')]",
 
-        "nxlogConfig": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
-        "wefSubscriptionsUrl": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/wef/subscriptions.zip')]",
+        "nxlogConfig": "[uri(parameters('_artifactsLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
+        "wefSubscriptionsUrl": "[uri(parameters('_artifactsLocation'), 'resources/configs/wef/subscriptions.zip')]",
 
-        "setWallPaperScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-WallPaper.ps1')]",
+        "setWallPaperScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-WallPaper.ps1')]",
 
         "endpointsDefault": [
             {
@@ -377,7 +375,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(variables('artifactsBlacksmithLocation'), concat('templates/azure/EventHub/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/EventHub/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -398,7 +396,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri('https://raw.githubusercontent.com/OTRF/','Azure-Sentinel2Go/master/azuredeploy.json')]",
+                    "uri": "[uri(parameters('_artifactsLocation'),'azure-sentinel/azuredeploy.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -718,7 +716,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
+                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1')]",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -818,7 +816,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
+                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1')]",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -848,7 +846,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-WEC.ps1",
+                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-WEC.ps1')]",
                         "[variables('prepareBoxScript')]",
                         "[variables('setIPAddressScript')]",
                         "[variables('setWallPaperScript')]"
@@ -900,7 +898,7 @@
                 "protectedSettings": {
                     "commandToExecute": "[concat('bash Set-Socat.sh -i', ' ', variables('endpoints')[4].ipAddress)]",
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-Socat.sh"
+                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Socat.sh')]"
                     ]
                 }
             }
@@ -945,7 +943,7 @@
                 "typeHandlerVersion": "2.19",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "ModulesUrl": "[uri(variables('artifactsBlacksmithLocation'), concat('resources/scripts/powershell/active-directory/DSC/CreateADPDC.zip', parameters('_artifactsLocationSasToken')))]",
+                    "ModulesUrl": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/CreateADPDC.zip', parameters('_artifactsLocationSasToken')))]",
                     "ConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
                     "Properties": {
                         "DomainName": "[parameters('domainFQDN')]",
@@ -1034,10 +1032,10 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-AD.ps1",
-                            "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/active-directory/Set-OUs.ps1')]",
-                            "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/active-directory/Add-DomainUsers.ps1')]",
-                            "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-AuditSAMRemoteCalls.ps1')]"
+                            "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-AD.ps1')]",
+                            "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/active-directory/Set-OUs.ps1')]",
+                            "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/active-directory/Add-DomainUsers.ps1')]",
+                            "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-AuditSAMRemoteCalls.ps1')]"
                         ]
                     },
                     "vmName": {
@@ -1104,7 +1102,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "[uri(variables('artifactsBlacksmithLocation'), concat('resources/scripts/powershell/auditing/Configure-WEC.ps1', parameters('_artifactsLocationSasToken')))]"
+                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Configure-WEC.ps1', parameters('_artifactsLocationSasToken')))]"
                         ]
                     },
                     "vmName": {
@@ -1179,7 +1177,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "[uri(variables('artifactsBlacksmithLocation'), concat('resources/scripts/powershell/auditing/Configure-WEF-Client.ps1', parameters('_artifactsLocationSasToken')))]"
+                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Configure-WEF-Client.ps1', parameters('_artifactsLocationSasToken')))]"
                         ]
                     },
                     "vmName": {
