@@ -192,28 +192,28 @@
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         
-        "virtualNetworkNameA": "vnet-dmevals",
+        "virtualNetworkNameA": "vnet-RRPROD",
         "virtualNetworkAddressRangeA": "10.0.0.0/16",
-        "subnetName1": "snet-corporate-warehouse",
+        "subnetName1": "snet-DMZ",
         "subnetRange1": "10.0.0.0/24",
         "subnetRef1": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName1'))]",
-        "subnetName2": "snet-branches",
+        "subnetName2": "snet-Internal",
         "subnetRange2": "10.0.1.0/24",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName2'))]",
         "subnetName3": "GatewaySubnet",
         "subnetRange3": "10.0.2.0/24",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
         
-        "virtualNetworkGateway": "vnetgw-apt29",
+        "virtualNetworkGateway": "vnetgw-external",
         "vpnClientAddressPoolPrefix": "172.18.39.0/24",
         
-        "virtualNetworkNameB": "vnet-attacker",
+        "virtualNetworkNameB": "vnet-external",
         "virtualNetworkAddressRangeB": "192.168.0.0/16",
-        "subnetName4": "snet-attacker",
+        "subnetName4": "snet-external",
         "subnetRange4": "192.168.0.0/24",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
 
-        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
+        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "dockerInstallScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/bash/Install-Docker.sh')]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
         "enableWinAuditCategories": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
@@ -222,19 +222,16 @@
         "downloadSACLScript": "[uri(parameters('_artifactsLocation'), 'Set-AuditRule/Set-AuditRule.ps1')]",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setIPAddressScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
-        
-        "logstashSetupScript": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/scripts/Set-Logstash.sh', parameters('_artifactsLocationSasToken')))]",
+        "logstashSetupScript": "[uri(parameters('_artifactsLocation'), concat('scripts/Set-Logstash.sh', parameters('_artifactsLocationSasToken')))]",
         "installLogShipperScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/endpoint-software/Install-Log-Shipper.ps1')]",
-
         "nxlogConfig": "[uri(parameters('_artifactsLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
         "wefSubscriptionsUrl": "[uri(parameters('_artifactsLocation'), 'resources/configs/wef/subscriptions.zip')]",
-
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-WallPaper.ps1')]",
 
         "endpointsDefault": [
             {
                 "tag": "domainController",
-                "vmName": "NEWYORK",
+                "vmName": "RRDCB01", //NEWYORK
                 "os": "windows",
                 "subnetref": "[variables('subnetRef1')]",
                 "ipAddress": "10.0.0.4",
@@ -246,7 +243,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "SCRANTON",
+                "vmName": "RRWSB01", //SCRANTON
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.4",
@@ -258,7 +255,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "UTICA",
+                "vmName": "RRWSB02", //UTICA
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.5",
@@ -270,7 +267,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "NASHUA",
+                "vmName": "RRWSB03", //NASHUA
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.6",
@@ -380,7 +377,7 @@
                 },
                 "parameters": {
                     "projectName": {
-                        "value": "APT29"
+                        "value": "range_event"
                     },
                     "eventHubSku": {
                         "value": "Standard"
@@ -401,7 +398,7 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "APT29"
+                        "value": "Range_Event"
                     },
                     "enableDataConnectorsKind": {
                         "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
@@ -471,7 +468,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[concat('apt29', '-', uniquestring(resourceGroup().id, parameters('utcValue')))]"
+                    "domainNameLabel": "[concat('external', '-', uniquestring(resourceGroup().id, parameters('utcValue')))]"
                 }
             }
         },
@@ -555,7 +552,7 @@
             }
         },
         {
-            "name": "vnet-dmevals/peering-to-remote-vnet-attacker",
+            "name": "vnet-RRPROD/peering-to-remote-vnet-external",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
@@ -576,7 +573,7 @@
             }
         },
         {
-            "name": "vnet-attacker/peering-to-remote-vnet-dmevals",
+            "name": "vnet-external/peering-to-remote-vnet-RRPROD",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
@@ -716,7 +713,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1')]",
+                        "[uri(parameters('_artifactsLocation'), 'scripts/Set-Initial-Settings.ps1')]",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -754,8 +751,8 @@
                     },
                     "fileUris": {
                         "value": [
-                            "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Victim.ps1')]",
-                            "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/victim.zip'))))]"
+                            "[uri(parameters('_artifactsLocation'), 'scripts/Set-Victim.ps1')]",
+                            "[uri(parameters('_artifactsLocation'), concat('', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/victim.zip'))))]"
                         ]
                     },
                     "vmName": {
@@ -816,7 +813,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1')]",
+                        "[uri(parameters('_artifactsLocation'), 'scripts/Set-Initial-Settings.ps1')]",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -846,7 +843,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-WEC.ps1')]",
+                        "[uri(parameters('_artifactsLocation'), 'scripts/Set-WEC.ps1')]",
                         "[variables('prepareBoxScript')]",
                         "[variables('setIPAddressScript')]",
                         "[variables('setWallPaperScript')]"
@@ -873,9 +870,9 @@
                 "protectedSettings": {
                     "commandToExecute": "[if(parameters('useCalderaDIY'),  concat('bash Set-Adversary.sh -s', ' ', parameters('pickScenario'), ' ', '-p'), concat('bash Set-Adversary.sh -s', ' ', parameters('pickScenario')))]",
                     "fileUris": [
-                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Adversary.sh')]",
+                        "[uri(parameters('_artifactsLocation'), 'scripts/Set-Adversary.sh')]",
                         "[variables('dockerInstallScript')]",
-                        "[uri(parameters('_artifactsLocation'), if(parameters('useCalderaDIY'), 'environments/attack-evals/apt29/caldera/conf/4fb34bde-b06d-445a-a146-8e35f79ce546.yml', concat('environments/attack-evals/apt29/payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/attack-platform.zip')))]"
+                        "[uri(parameters('_artifactsLocation'), if(parameters('useCalderaDIY'), 'caldera/conf/4fb34bde-b06d-445a-a146-8e35f79ce546.yml', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/attack-platform.zip')))]"
                     ]
                 }
             }
@@ -898,7 +895,7 @@
                 "protectedSettings": {
                     "commandToExecute": "[concat('bash Set-Socat.sh -i', ' ', variables('endpoints')[4].ipAddress)]",
                     "fileUris": [
-                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Socat.sh')]"
+                        "[uri(parameters('_artifactsLocation'), 'scripts/Set-Socat.sh')]"
                     ]
                 }
             }
@@ -971,7 +968,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -1032,7 +1029,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-AD.ps1')]",
+                            "[uri(parameters('_artifactsLocation'), 'scripts/Set-AD.ps1')]",
                             "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/active-directory/Set-OUs.ps1')]",
                             "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/active-directory/Add-DomainUsers.ps1')]",
                             "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-AuditSAMRemoteCalls.ps1')]"
