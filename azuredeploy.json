@@ -157,7 +157,7 @@
         },
         "domainFQDN": {
             "type": "string",
-            "defaultValue": "dmevals.local",
+            "defaultValue": "rookrange.local",
             "metadata": {
                 "description": "The FQDN of the Active Directory Domain to be created"
             }
