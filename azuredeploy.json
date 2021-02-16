@@ -382,7 +382,7 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "range_event"
+                        "value": "event567th"
                     },
                     "enableDataConnectorsKind": {
                         "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
