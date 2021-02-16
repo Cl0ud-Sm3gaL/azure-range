@@ -377,7 +377,7 @@
                 },
                 "parameters": {
                     "projectName": {
-                        "value": "range_event"
+                        "value": "range_event_"
                     },
                     "eventHubSku": {
                         "value": "Standard"
@@ -398,7 +398,7 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "Range_Event"
+                        "value": "range_event_"
                     },
                     "enableDataConnectorsKind": {
                         "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
@@ -784,7 +784,7 @@
                         "value": "SetUpWKS"
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell.exe -ExecutionPolicy Unrestricted -Command \"Add-LocalGroupMember -Group Administrators -Member', ' ', variables('domainNameArray')[0],'\\pbeesly\"')]"
+                        "value": "[concat('powershell.exe -ExecutionPolicy Unrestricted -Command \"Add-LocalGroupMember -Group Administrators -Member', ' ', variables('domainNameArray')[0],'\\mlillard\"')]"
                     },
                     "fileUris": {
                         "value": []
