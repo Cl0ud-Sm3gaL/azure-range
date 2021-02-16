@@ -143,7 +143,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/Cl0ud-Sm3gaL/master/azure-range/",
+            "defaultValue": "https://raw.githubusercontent.com/Cl0ud-Sm3gaL/azure-range/main/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
