@@ -22,7 +22,6 @@
         "setDataPipeline": {
             "type": "string",
             "allowedValues": [
-                "WEF-LOGSTASH-EVENTHUB",
                 "AZURESENTINEL"
             ],
             "metadata": {
@@ -143,7 +142,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/Cl0ud-Sm3gaL/master/azure-range/",
+            "defaultValue": "https://raw.githubusercontent.com/Cl0ud-Sm3gaL/azure-range/main/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -222,9 +221,6 @@
         "downloadSACLScript": "[uri(parameters('_artifactsLocation'), 'Set-AuditRule/Set-AuditRule.ps1')]",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setIPAddressScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
-        "logstashSetupScript": "[uri(parameters('_artifactsLocation'), concat('scripts/Set-Logstash.sh', parameters('_artifactsLocationSasToken')))]",
-        "installLogShipperScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/endpoint-software/Install-Log-Shipper.ps1')]",
-        "nxlogConfig": "[uri(parameters('_artifactsLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
         "wefSubscriptionsUrl": "[uri(parameters('_artifactsLocation'), 'resources/configs/wef/subscriptions.zip')]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-WallPaper.ps1')]",
 
@@ -317,18 +313,6 @@
                 "offer": "Windows-10",
                 "sku": "[parameters('windowsDesktopSKU')]",
                 "version": "[parameters('windowsDesktopVersion')]"
-            },
-            {
-                "tag": "logShipper",
-                "vmName": "LOGSTASH",
-                "os": "linux",
-                "subnetref": "[variables('subnetRef2')]",
-                "ipAddress": "10.0.1.11",
-                "vmSize": "[parameters('linuxVmSize')]",
-                "publisher": "Canonical",
-                "offer": "UbuntuServer",
-                "sku": "[parameters('ubuntuSKU')]",
-                "version": "latest"
             }
         ],
 
@@ -901,31 +885,6 @@
             }
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'LOGSTASH-EVENTHUB')]",
-            "name": "[concat(variables('endpointsLogging')[1].vmName, '/SetUpLogstash')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpointsLogging')[1].vmName)]",
-                "deployEventHub"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.1",
-                "autoUpgradeMinorVersion": true,
-                "settings": {},
-                "protectedSettings": {
-                    "commandToExecute": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat('bash Set-Logstash.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]",
-                    "fileUris": [
-                        "[variables('logstashSetupScript')]",
-                        "[variables('dockerInstallScript')]"
-                    ]
-                }
-            }
-        },
-        {
             "name": "[concat(variables('endpoints')[0].vmName, '/CreateADForest')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
@@ -1100,42 +1059,6 @@
                     "fileUris": {
                         "value": [
                             "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Configure-WEC.ps1', parameters('_artifactsLocationSasToken')))]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[variables('endpointsLogging')[0].vmName]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[contains(parameters('setDataPipeline'), 'WEF-LOGSTASH')]",
-            "name": "SetUpWECLogstash",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "dependsOn": [
-                "ConfigureWEC",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsLogging')[1].vmName, 'SetUpLogstash')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptExTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetUpWEC"
-                    },
-                    "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Install-Log-Shipper.ps1', ' ', '-DestinationIP', ' ', variables('endpointsLogging')[1].ipAddress, ' ', '-ShipperAgent Nxlog', ' ', '-ConfigUrl', ' ', variables('nxlogConfig'))]"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[variables('installLogShipperScript')]"
                         ]
                     },
                     "vmName": {
