@@ -41,18 +41,18 @@ $DomainName1,$DomainName2 = $domainFQDN.split('.')
 
 $domainUsers = @"
 FirstName,LastName,SamAccountName,Department,JobTitle,Password,Identity,UserContainer
-Kate,Libby,klibby,Human Resources,HR Director,S@l@m3!123,Users,DomainUsers
-John,Miller,jmiller,IT Support,CIO,W1n1!2019,Domain Admins,DomainUsers
-Wendell,Pierce,wpierce,Accounting,VP,T0d@y!2019,Users,DomainUsers
-Renoly,Santiago,rsantiago,Sales,Agent,B1gM@c!2020,Users,DomainUsers
-Matthew,Lillard,mlillard,Reception,Receptionist,Fl0nk3rt0n!T0by,Users,DomainUsers
-Fisher,Stevens,fstevens,Sales,Agent,Schrut3F@rms!B33ts,Users,DomainUsers
-Jesse,Bradford,jbradford,Management,Manager,abc123!D@t3M1k3,Domain Admins,DomainUsers 
+Norah,Martha,nmartha,Human Resources,HR Director,S@l@m3!123,Users,DomainUsers
+Pedro,Gustavo,pgustavo,IT Support,CIO,W1n1!2019,Domain Admins,DomainUsers
+Lucho,Rodriguez,lrodriguez,Accounting,VP,T0d@y!2019,Users,DomainUsers
+Stevie,Beavers,sbeavers,Sales,Agent,B1gM@c!2020,Users,DomainUsers
+Pam,Beesly,pbeesly,Reception,Receptionist,Fl0nk3rt0n!T0by,Users,DomainUsers
+Dwight,Schrute,dschrute,Sales,Assistant,Schrut3F@rms!B33ts,Users,DomainUsers
+Michael,Scott,mscott,Management,BestBoss,abc123!D@t3M1k3,Domain Admins,DomainUsers 
 Sysmon,MS,sysmonsvc,IT Support,Service Account,Buggy!1122,Users,DomainUsers
 Nxlog,Shipper,nxlogsvc,IT Support,Service Account,S3nData!1122,Users,DomainUsers
 Defense,Shield,defensesvc,IT Support,Service Account,Sh13ld!1122,Users,DomainUsers
-StrikeOwl,Community,owlsvc,IT Support,Service Account,L0v30p3nS0urc3!2020,Users,DomainUsers
-Rook,overlords,rooksvc,IT Support,Service Account,Th3K1ng!1122,Users,DomainUsers
+OTR,Community,otrsvc,IT Support,Service Account,L0v30p3nS0urc3!2020,Users,DomainUsers
+Ring,Mordor,mordorsvc,IT Support,Service Account,Th3K1ng!1122,Users,DomainUsers
 "@
 
 write-host "Creating domain users.."

@@ -2,7 +2,7 @@ facts:
   - trait: target.domain.name
     value: rookrange.local
   - trait: target.winrm.username
-    value: jbradford
+    value: mscott
   - trait: target.winrm.password
     value: abc123!D@t3M1k3
   - trait: target.winrm.remote_host
@@ -12,11 +12,11 @@ facts:
   - trait: 7zip_password
     value: lolol
   - trait: profile_user
-    value: mlillard
+    value: pbeesly
   - trait: profile_user_password
     value: Fl0nk3rt0n!T0by
   - trait: profile_user_day2
-    value: fstevens
+    value: dschrute
   - trait: profile_user_password_day2
     value: Schrut3F@rms!B33ts
   - trait: onedrive.username
