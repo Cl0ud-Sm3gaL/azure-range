@@ -768,7 +768,7 @@
                         "value": "SetUpWKS"
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell.exe -ExecutionPolicy Unrestricted -Command \"Add-LocalGroupMember -Group Administrators -Member', ' ', variables('domainNameArray')[0],'\\pbeesly\"')]"
+                        "value": "[concat('powershell.exe -ExecutionPolicy Unrestricted -Command \"Add-LocalGroupMember -Group Administrators -Member', ' ', variables('domainNameArray')[0],'\\mlillard\"')]"
                     },
                     "fileUris": {
                         "value": []
