@@ -377,7 +377,7 @@
                 },
                 "parameters": {
                     "projectName": {
-                        "value": "range_event"
+                        "value": "event"
                     },
                     "eventHubSku": {
                         "value": "Standard"
