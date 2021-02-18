@@ -38,11 +38,11 @@ choco feature enable -n allowGlobalConfirmation
 if ($scenario -eq 'Day1')
 {
     # Add user to local administrator group
-    net localgroup Administrators "$domainName\pbeesly" /add
+    net localgroup Administrators "$domainName\mlillard" /add
 
     # Give Pam Beesly and Dwight Schrute Full control access to C:\Windows\Temp. User is already part of Administrator group which has Full Control access to it, but just in case ;) 
     $acl = Get-Acl C:\Windows\Temp
-    $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("$domainName\pbeesly","FullControl","Allow")
+    $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("$domainName\mlillard","FullControl","Allow")
     $acl.SetAccessRule($AccessRule)
     $acl | Set-Acl C:\Windows\Temp
 
@@ -61,10 +61,10 @@ if ($scenario -eq 'Day1')
 else
 {
     # Add user to local administrator group
-    net localgroup Administrators "$domainName\dschrute" /add
+    net localgroup Administrators "$domainName\fstevens" /add
 
     $acl = Get-Acl C:\Windows\Temp
-    $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("$domainName\dschrute","FullControl","Allow")
+    $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("$domainName\fstevens","FullControl","Allow")
     $acl.SetAccessRule($AccessRule)
     $acl | Set-Acl C:\Windows\Temp
     
