@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "value": "GEN-UNIQUE"
+        },
+        "adminPassword": {
+            "value": "GEN-PASSWORD"
+        },
+        "vmNamePrefix": {
+            "value": "WORKSTATION"
+        },
+        "numberOfWorkstations": {
+            "value": 1
+        },
+        "windowsDesktopSKU": {
+            "value": "19h2-pro"
+        },
+        "windowsDesktopVersion": {
+            "value": "latest"
+        },
+        "vmSize": {
+            "value": "Standard_B2s"
+        },
+        "allowedIPAddresses": {
+            "value": "*"
+        },
+        "_artifactsLocation": {
+            "value": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "value": ""
+        },
+        "enableMonitoringAgent": {
+            "value": false
+        },
+        "workspaceId": {
+            "value": ""
+        },
+        "workspaceKey": {
+            "value": ""
+        },
+        "enableSysmon": {
+            "value": false
+        },
+        "enableAntimalware": {
+            "value": false
+        },
+        "virtualNetworkName": {
+            "value": "vnet-win"
+        },
+        "virtualNetworkAddressRange": {
+            "value": "192.168.0.0/16"
+        },
+        "subnetRange": {
+            "value": "192.168.2.0/24"
+        },
+        "subnetName": {
+            "value": "snet-win"
+        }
+    }
+}
