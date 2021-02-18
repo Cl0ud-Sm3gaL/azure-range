@@ -69,7 +69,7 @@
         },
         "securityCollectionTier": {
             "type": "string",
-            "defaultValue": "Minimal",
+            "defaultValue": "All",
             "allowedValues": [
                 "All",
                 "Recommended",

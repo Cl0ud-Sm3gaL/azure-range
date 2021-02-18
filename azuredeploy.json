@@ -382,10 +382,28 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "event567th"
+                        "value": "event"
                     },
                     "enableDataConnectorsKind": {
                         "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
+                    }, 
+                    "setSecurityCollectionTier": {
+                        "value": "All"
+                    },
+                    "enableWinEventProviders": {
+                        "value": [
+                            "System",
+                            "Microsoft-Windows-Sysmon/Operational",
+                            "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational",
+                            "Microsoft-Windows-Bits-Client/Operational",
+                            "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+                            "Directory Service",
+                            "Microsoft-Windows-DNS-Client/Operational",
+                            "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
+                            "Windows PowerShell",
+                            "Microsoft-Windows-PowerShell/Operational",
+                            "Microsoft-Windows-WMI-Activity/Operational"
+                        ]
                     }
                 }
             }
