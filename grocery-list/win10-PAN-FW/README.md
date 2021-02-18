@@ -17,7 +17,7 @@
 * CEF Data Connector Enabled
 * Palo Alto Networks Data Connector
 * [OPTIONAL] Sysmon
-    * [Sysmon Config](https://github.com/OTRF/Blacksmith/blob/master/resources/configs/sysmon/sysmon.xml)
+    * [Sysmon Config](https://raw.githubusercontent.com/Cl0ud-Sm3gaL/azure-range/main/resources/configs/sysmon/sysmon.xml)
 * [OPTIONAL] Command and Control (c2) options:
     * `empire`
     * `covenant`
