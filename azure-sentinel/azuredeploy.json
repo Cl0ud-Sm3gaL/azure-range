@@ -65,7 +65,7 @@
             "metadata": {
                 "description": "List of functions to enable in your Log Analytics Workspace. Available: Sysmon"
             },
-            "defaultValue": []
+            "defaultValue": ["Sysmon"]
         },
         "securityCollectionTier": {
             "type": "string",
@@ -114,6 +114,26 @@
                 "description": "Location for all resources."
             },
             "defaultValue": "[resourceGroup().location]"
+        },
+        "collectWinEventProviders": {
+            "type": "array",
+            "metadata": {
+                "description": "Do you want to configure your Log Analytics Workspace to collect Windows Event Logs from several pre-defined event providers?. Windows Security Auditing is not enabled through this option. It is enabled through the Data Connectors parameter."
+            },
+            "defaultValue": [
+                "System",
+                "Microsoft-Windows-Sysmon/Operational",
+                "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational",
+                "Microsoft-Windows-Bits-Client/Operational",
+                "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+                "Directory Service",
+                "Microsoft-Windows-DNS-Client/Operational",
+                "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
+                "Windows PowerShell",
+                "Microsoft-Windows-PowerShell/Operational",
+                "Microsoft-Windows-WMI-Activity/Operational",
+                "Microsoft-Windows-TaskScheduler/Operational"
+            ]
         }
     },
     "variables": {
@@ -242,6 +262,33 @@
                     },
                     "enableLAFunctions": {
                         "value": "[parameters('enableLAFunctions')]"
+                    }
+                }
+            }
+        },
+                {
+            "condition": "[not(empty(parameters('collectWinEventProviders')))]",
+            "name": "collectWinDataSources",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('SecurityInsights','(', variables('uniqueWorkspace'),')'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'),'azure-sentinel/linkedtemplates/log-analytics/winDataSources.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "winEventProviders": {
+                        "value": "[parameters('collectWinEventProviders')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
                     }
                 }
             }
