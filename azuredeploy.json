@@ -30,7 +30,7 @@
         },
         "useCalderaDIY": {
             "type": "bool",
-            "defaultValue": false,
+            "defaultValue": true,
             "metadata": {
                 "description": "Do you want to use the Caldear DIY Plugin? Reference: https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/CALDERA_DIY/evals"
             }
