@@ -752,7 +752,7 @@
                     "fileUris": {
                         "value": [
                             "[uri(parameters('_artifactsLocation'), 'scripts/Set-Victim.ps1')]",
-                            "[uri(parameters('_artifactsLocation'), concat('', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/victim.zip'))))]"
+                            "[uri(parameters('_artifactsLocation'), concat('', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/default.zip'))))]"
                         ]
                     },
                     "vmName": {

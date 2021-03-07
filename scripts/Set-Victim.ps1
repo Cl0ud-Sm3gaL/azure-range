@@ -23,7 +23,7 @@ else
 {
     # Unzip file
     write-Host "Decompressing Victim zip .."
-    $VictimFilePath = (Get-Item victim.zip).FullName
+    $VictimFilePath = (Get-Item default.zip).FullName
     expand-archive -path $VictimFilePath -DestinationPath "C:\ProgramData\"
 }
 
@@ -53,7 +53,7 @@ if ($scenario -eq 'Day1')
     if (!$useCalderaDIY)
     {
         # Import PFX Certificate
-        Import-PfxCertificate -Exportable -FilePath C:\programdata\victim\shockwave.local.pfx -CertStoreLocation Cert:\LocalMachine\My
+        Import-PfxCertificate -Exportable -FilePath C:\programdata\dafault\shockwave.local.pfx -CertStoreLocation Cert:\LocalMachine\My
         
         # rcs.3aka3.doc is downloaded to the victim system via the main ARM template (Private Storage Account ATM)
     }

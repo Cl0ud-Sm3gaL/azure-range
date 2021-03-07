@@ -156,7 +156,7 @@
         },
         "domainFQDN": {
             "type": "string",
-            "defaultValue": "rookrange.local",
+            "defaultValue": "emc_prod.local",
             "metadata": {
                 "description": "The FQDN of the Active Directory Domain to be created"
             }
@@ -191,7 +191,7 @@
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         
-        "virtualNetworkNameA": "vnet-RRPROD",
+        "virtualNetworkNameA": "vnet-PROD",
         "virtualNetworkAddressRangeA": "10.0.0.0/16",
         "subnetName1": "snet-DMZ",
         "subnetRange1": "10.0.0.0/24",
@@ -227,7 +227,7 @@
         "endpointsDefault": [
             {
                 "tag": "domainController",
-                "vmName": "RRDCB01", //NEWYORK
+                "vmName": "AZDCB01", //NEWYORK
                 "os": "windows",
                 "subnetref": "[variables('subnetRef1')]",
                 "ipAddress": "10.0.0.4",
@@ -239,7 +239,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "RRWSB01", //SCRANTON
+                "vmName": "AZWSB01", //SCRANTON
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.4",
@@ -251,7 +251,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "RRWSB02", //UTICA
+                "vmName": "AZWSB02", //UTICA
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.5",
@@ -263,7 +263,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "RRWSB03", //NASHUA
+                "vmName": "AZWSB03", //NASHUA
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.6",
@@ -733,7 +733,7 @@
                     "fileUris": {
                         "value": [
                             "[uri(parameters('_artifactsLocation'), 'scripts/Set-Victim.ps1')]",
-                            "[uri(parameters('_artifactsLocation'), concat('', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/victim.zip'))))]"
+                            "[uri(parameters('_artifactsLocation'), concat('', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/default.zip'))))]"
                         ]
                     },
                     "vmName": {
