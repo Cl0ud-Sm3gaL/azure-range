@@ -533,7 +533,7 @@
             }
         },
         {
-            "name": "vnet-RRPROD/peering-to-remote-vnet-external",
+            "name": "vnet-PROD/peering-to-remote-vnet-external",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
