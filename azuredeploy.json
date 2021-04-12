@@ -443,7 +443,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]",
-                "[resourceId('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]",
                 "UpdateVNetDNS"
             ],
             "location": "[parameters('location')]",
