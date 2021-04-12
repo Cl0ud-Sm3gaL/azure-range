@@ -11,26 +11,21 @@
         },
         "pickScenario": {
             "type": "string",
+            "defaultValue": "Day1",
             "allowedValues": [
-                "Day1",
-                "Day2"
-            ],
-            "metadata": {
-                "description": "The Evaluations emulation is split into two distinct scenarios (Days 1 and 2) to reflect these differing operational flows and toolkits used by APT29."
-            }
+                "Day1"
+            ]
         },
         "setDataPipeline": {
             "type": "string",
+            "defaultValue": "AZURESENTINEL",
             "allowedValues": [
                 "AZURESENTINEL"
-            ],
-            "metadata": {
-                "description": "The specific data pipeline that you would like to use to aggregate and analyze security events"
-            }
+            ]
         },
         "useCalderaDIY": {
             "type": "bool",
-            "defaultValue": true,
+            "defaultValue": false,
             "metadata": {
                 "description": "Do you want to use the Caldear DIY Plugin? Reference: https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/CALDERA_DIY/evals"
             }
@@ -156,7 +151,7 @@
         },
         "domainFQDN": {
             "type": "string",
-            "defaultValue": "rookrange.local",
+            "defaultValue": "emc_prod.local",
             "metadata": {
                 "description": "The FQDN of the Active Directory Domain to be created"
             }
@@ -166,18 +161,6 @@
             "defaultValue": 3,
             "metadata": {
                 "description": "Set of bit flags that define the join options. Default value of 3 is a combination of NETSETUP_JOIN_DOMAIN (0x00000001) & NETSETUP_ACCT_CREATE (0x00000002) i.e. will join the domain and create the account on the domain. For more information see https://msdn.microsoft.com/en-us/library/aa392154(v=vs.85).aspx"
-            }
-        },
-        "clientRootCertName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the client root certificate used to authenticate VPN clients. This is a common name used to identify the root cert."
-            }
-        },
-        "clientRootCertData": {
-            "type": "string",
-            "metadata": {
-                "description": "Client root certificate data used to authenticate VPN clients."
             }
         },
         "location": {
@@ -190,8 +173,7 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-        
-        "virtualNetworkNameA": "vnet-RRPROD",
+        "virtualNetworkNameA": "vnet-PROD",
         "virtualNetworkAddressRangeA": "10.0.0.0/16",
         "subnetName1": "snet-DMZ",
         "subnetRange1": "10.0.0.0/24",
@@ -200,18 +182,13 @@
         "subnetRange2": "10.0.1.0/24",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName2'))]",
         "subnetName3": "GatewaySubnet",
-        "subnetRange3": "10.0.2.0/24",
-        "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
-        
-        "virtualNetworkGateway": "vnetgw-external",
-        "vpnClientAddressPoolPrefix": "172.18.39.0/24",
-        
+        "subnetRange3": "10.0.2.0/24",       
+        "virtualNetworkGateway": "vnetgw-external",        
         "virtualNetworkNameB": "vnet-external",
         "virtualNetworkAddressRangeB": "192.168.0.0/16",
         "subnetName4": "snet-external",
         "subnetRange4": "192.168.0.0/24",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
-
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "dockerInstallScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/bash/Install-Docker.sh')]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
@@ -227,7 +204,7 @@
         "endpointsDefault": [
             {
                 "tag": "domainController",
-                "vmName": "RRDCB01", //NEWYORK
+                "vmName": "AZDCB01", //NEWYORK
                 "os": "windows",
                 "subnetref": "[variables('subnetRef1')]",
                 "ipAddress": "10.0.0.4",
@@ -239,7 +216,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "RRWSB01", //SCRANTON
+                "vmName": "AZWSB01", //SCRANTON
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.4",
@@ -251,7 +228,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "RRWSB02", //UTICA
+                "vmName": "AZWSB02", //UTICA
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.5",
@@ -263,7 +240,7 @@
             },
             {
                 "tag": "workstation",
-                "vmName": "RRWSB03", //NASHUA
+                "vmName": "AZWSB03", //NASHUA
                 "os": "windows",
                 "subnetref": "[variables('subnetRef2')]",
                 "ipAddress": "10.0.1.6",
@@ -349,27 +326,6 @@
             "properties": {}
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'EVENTHUB')]",
-            "name": "deployEventHub",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/EventHub/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "projectName": {
-                        "value": "range_event"
-                    },
-                    "eventHubSku": {
-                        "value": "Standard"
-                    }
-                }
-            }
-        },
-        {
             "condition": "[equals(parameters('setDataPipeline'), 'AZURESENTINEL')]",
             "name": "deployAzureSentinel2Go",
             "type": "Microsoft.Resources/deployments",
@@ -382,10 +338,7 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "event567th"
-                    },
-                    "enableDataConnectorsKind": {
-                        "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
+                        "value": "event"
                     }
                 }
             }
@@ -457,57 +410,6 @@
             }
         },
         {
-            "name": "[variables('virtualNetworkGateway')]",
-            "type": "Microsoft.Network/virtualNetworkGateways",
-            "apiVersion": "2019-11-01",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/', 'pip-gateway')]",
-                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[variables('subnetRef3')]"
-                            },
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses','pip-gateway')]"
-                            }
-                        },
-                        "name": "vnetGatewayConfig"
-                    }
-                ],
-                "sku": {
-                    "name": "VpnGw1",
-                    "tier": "VpnGw1"
-                },
-                "gatewayType": "Vpn",
-                "vpnType": "RouteBased",
-                "enableBgp": "false",
-                "vpnClientConfiguration": {
-                    "vpnClientAddressPool": {
-                        "addressPrefixes": [
-                            "[variables('vpnClientAddressPoolPrefix')]"
-                        ]
-                    },
-                    "vpnClientRootCertificates": [
-                        {
-                            "name": "[parameters('clientRootCertName')]",
-                            "properties": {
-                                "PublicCertData": "[parameters('clientRootCertData')]"
-                            }
-                        }
-                    ],
-                    "vpnClientProtocols": [
-                        "OpenVPN"
-                    ]
-                }
-            }
-        },
-        {
             "name": "[concat('nic-', variables('endpoints')[copyIndex()].vmName)]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
@@ -536,7 +438,7 @@
             }
         },
         {
-            "name": "vnet-RRPROD/peering-to-remote-vnet-external",
+            "name": "vnet-PROD/peering-to-remote-vnet-external",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
@@ -736,7 +638,7 @@
                     "fileUris": {
                         "value": [
                             "[uri(parameters('_artifactsLocation'), 'scripts/Set-Victim.ps1')]",
-                            "[uri(parameters('_artifactsLocation'), concat('', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/victim.zip'))))]"
+                            "[uri(parameters('_artifactsLocation'), concat('', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/default.zip'))))]"
                         ]
                     },
                     "vmName": {
