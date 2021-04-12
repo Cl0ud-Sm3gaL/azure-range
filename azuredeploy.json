@@ -463,7 +463,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]",
-                "[resourceId('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]",
                 "UpdateVNetDNS"
             ],
             "location": "[parameters('location')]",
@@ -821,8 +820,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'CreateADForest')]",
-                "[concat('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'CreateADForest')]"
             ],
             "properties": {
                 "mode": "Incremental",
