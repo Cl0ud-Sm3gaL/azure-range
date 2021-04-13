@@ -185,7 +185,6 @@
         "subnetRange3": "10.0.2.0/24",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
         "virtualNetworkGateway": "vnetgw-external",
-        "vpnClientAddressPoolPrefix": "172.18.39.0/24",
         "virtualNetworkNameB": "vnet-external",
         "virtualNetworkAddressRangeB": "192.168.0.0/16",
         "subnetName4": "snet-external",
