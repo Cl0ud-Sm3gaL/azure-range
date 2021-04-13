@@ -182,7 +182,10 @@
         "subnetRange2": "10.0.1.0/24",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName2'))]",
         "subnetName3": "GatewaySubnet",
-        "subnetRange3": "10.0.2.0/24",              
+        "subnetRange3": "10.0.2.0/24",
+        "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
+        "virtualNetworkGateway": "vnetgw-external",
+        "vpnClientAddressPoolPrefix": "172.18.39.0/24",
         "virtualNetworkNameB": "vnet-external",
         "virtualNetworkAddressRangeB": "192.168.0.0/16",
         "subnetName4": "snet-external",
@@ -324,6 +327,7 @@
             "kind": "Storage",
             "properties": {}
         },
+        
         {
             "condition": "[equals(parameters('setDataPipeline'), 'AZURESENTINEL')]",
             "name": "deployAzureSentinel2Go",
@@ -341,6 +345,39 @@
                     }
                 }
             }
+        },
+        {
+        "name": "[variables('virtualNetworkGateway')]",
+        "type": "Microsoft.Network/virtualNetworkGateways",
+        "apiVersion": "2019-11-01",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+            "[concat('Microsoft.Network/publicIPAddresses/', 'pip-gateway')]",
+            "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]"
+            ],
+        "properties": {
+            "ipConfigurations": [
+                {
+                "properties": {
+                    "privateIPAllocationMethod": "Dynamic",
+                    "subnet": {
+                        "id": "[variables('subnetRef3')]"
+                        },
+                    "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses','pip-gateway')]"
+                        }
+                    },
+                    "name": "vnetGatewayConfig"
+                }
+                ],
+            "sku": {
+                "name": "VpnGw1",
+                "tier": "VpnGw1"
+                },
+            "gatewayType": "Vpn",
+            "vpnType": "RouteBased",
+            "enableBgp": "false"
+            }   
         },
         {
             "name": "[variables('virtualNetworkNameA')]",
@@ -443,6 +480,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]",
+                "[resourceId('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]",
                 "UpdateVNetDNS"
             ],
             "location": "[parameters('location')]",
@@ -463,6 +501,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]",
+                "[resourceId('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]",
                 "UpdateVNetDNS"
             ],
             "location": "[parameters('location')]",
@@ -470,7 +509,7 @@
                 "allowVirtualNetworkAccess": true,
                 "allowForwardedTraffic": false,
                 "allowGatewayTransit": false,
-                "useRemoteGateways": false,
+                "useRemoteGateways": true,
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]"
                 }
@@ -820,7 +859,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'CreateADForest')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'CreateADForest')]",
+                "[concat('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]"
             ],
             "properties": {
                 "mode": "Incremental",
