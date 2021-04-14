@@ -376,7 +376,7 @@
                 },
             "gatewayType": "Vpn",
             "vpnType": "RouteBased",
-            "enableBgp": "false"
+            "enableBgp": false,
             "vpnClientConfiguration": {
                     "vpnClientAddressPool": {
                         "addressPrefixes": [
