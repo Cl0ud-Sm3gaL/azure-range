@@ -13,19 +13,26 @@
             "type": "string",
             "defaultValue": "Day1",
             "allowedValues": [
-                "Day1"
-            ]
+                "Day1",
+                "Day2"
+            ],
+            "metadata": {
+                "description": "The Evaluations emulation is split into two distinct scenarios (Days 1 and 2) to reflect these differing operational flows and toolkits used by APT29."
+            }
         },
         "setDataPipeline": {
             "type": "string",
             "defaultValue": "AZURESENTINEL",
             "allowedValues": [
                 "AZURESENTINEL"
-            ]
+            ],
+            "metadata": {
+                "description": "The specific data pipeline that you would like to use to aggregate and analyze security events"
+            }
         },
         "useCalderaDIY": {
             "type": "bool",
-            "defaultValue": false,
+            "defaultValue": true,
             "metadata": {
                 "description": "Do you want to use the Caldear DIY Plugin? Reference: https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/CALDERA_DIY/evals"
             }
@@ -163,6 +170,18 @@
                 "description": "Set of bit flags that define the join options. Default value of 3 is a combination of NETSETUP_JOIN_DOMAIN (0x00000001) & NETSETUP_ACCT_CREATE (0x00000002) i.e. will join the domain and create the account on the domain. For more information see https://msdn.microsoft.com/en-us/library/aa392154(v=vs.85).aspx"
             }
         },
+        "clientRootCertName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the client root certificate used to authenticate VPN clients. This is a common name used to identify the root cert."
+            }
+        },
+        "clientRootCertData": {
+            "type": "string",
+            "metadata": {
+                "description": "Client root certificate data used to authenticate VPN clients."
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -173,6 +192,7 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+
         "virtualNetworkNameA": "vnet-PROD",
         "virtualNetworkAddressRangeA": "10.0.0.0/16",
         "subnetName1": "snet-DMZ",
@@ -185,9 +205,9 @@
         "subnetRange3": "10.0.2.0/24",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
         "virtualNetworkGateway": "vnetgw-external",
+        "vpnClientAddressPoolPrefix": "172.18.39.0/24",       
         "virtualNetworkNameB": "vnet-external",
         "virtualNetworkAddressRangeB": "192.168.0.0/16",
-        "vpnClientAddressPoolPrefix": "172.18.39.0/24",
         "subnetName4": "snet-external",
         "subnetRange4": "192.168.0.0/24",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
@@ -202,7 +222,6 @@
         "setIPAddressScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
         "wefSubscriptionsUrl": "[uri(parameters('_artifactsLocation'), 'resources/configs/wef/subscriptions.zip')]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/misc/Set-WallPaper.ps1')]",
-
         "endpointsDefault": [
             {
                 "tag": "domainController",
@@ -279,7 +298,6 @@
                 "version": "latest"
             }
         ],
-
         "endpointsLogging": [
             {
                 "tag": "logCollector",
@@ -294,12 +312,9 @@
                 "version": "[parameters('windowsDesktopVersion')]"
             }
         ],
-
         "endpointsScenario": "[if(and(equals(parameters('pickScenario'), 'Day1'), not(parameters('useCalderaDIY'))), concat(variables('endpointsDefault'), variables('endpointRedirector')), variables('endpointsDefault'))]",
         "endpoints": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('endpointsScenario'), variables('endpointsLogging')),variables('endpointsScenario'))]",
-
         "patientZero": "[if(equals(parameters('pickScenario'), 'Day1'), variables('endpoints')[1].vmName, variables('endpoints')[2].vmName)]",
-
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "ouPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         
@@ -327,7 +342,27 @@
             "kind": "Storage",
             "properties": {}
         },
-        
+        {
+            "condition": "[contains(parameters('setDataPipeline'), 'EVENTHUB')]",
+            "name": "deployEventHub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/EventHub/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "projectName": {
+                        "value": "range_event"
+                    },
+                    "eventHubSku": {
+                        "value": "Standard"
+                    }
+                }
+            }
+        },
         {
             "condition": "[equals(parameters('setDataPipeline'), 'AZURESENTINEL')]",
             "name": "deployAzureSentinel2Go",
@@ -341,53 +376,13 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "event"
+                        "value": "event567th"
+                    },
+                    "enableDataConnectorsKind": {
+                        "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
                     }
                 }
             }
-        },
-        {
-        "name": "[variables('virtualNetworkGateway')]",
-        "type": "Microsoft.Network/virtualNetworkGateways",
-        "apiVersion": "2019-11-01",
-        "location": "[resourceGroup().location]",
-        "dependsOn": [
-            "[concat('Microsoft.Network/publicIPAddresses/', 'pip-gateway')]",
-            "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]"
-            ],
-        "properties": {
-            "ipConfigurations": [
-                {
-                "properties": {
-                    "privateIPAllocationMethod": "Dynamic",
-                    "subnet": {
-                        "id": "[variables('subnetRef3')]"
-                        },
-                    "publicIPAddress": {
-                        "id": "[resourceId('Microsoft.Network/publicIPAddresses','pip-gateway')]"
-                        }
-                    },
-                    "name": "vnetGatewayConfig"
-                }
-                ],
-            "sku": {
-                "name": "VpnGw1",
-                "tier": "VpnGw1"
-                },
-            "gatewayType": "Vpn",
-            "vpnType": "RouteBased",
-            "enableBgp": false,
-            "vpnClientConfiguration": {
-                    "vpnClientAddressPool": {
-                        "addressPrefixes": [
-                            "[variables('vpnClientAddressPoolPrefix')]"
-                        ]
-                    },
-                    "vpnClientProtocols": [
-                        "OpenVPN"
-                    ]
-                }
-            } 
         },
         {
             "name": "[variables('virtualNetworkNameA')]",
@@ -452,6 +447,57 @@
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
                     "domainNameLabel": "[concat('external', '-', uniquestring(resourceGroup().id, parameters('utcValue')))]"
+                }
+            }
+        },
+        {
+            "name": "[variables('virtualNetworkGateway')]",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', 'pip-gateway')]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('subnetRef3')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses','pip-gateway')]"
+                            }
+                        },
+                        "name": "vnetGatewayConfig"
+                    }
+                ],
+                "sku": {
+                    "name": "VpnGw1",
+                    "tier": "VpnGw1"
+                },
+                "gatewayType": "Vpn",
+                "vpnType": "RouteBased",
+                "enableBgp": "false",
+                "vpnClientConfiguration": {
+                    "vpnClientAddressPool": {
+                        "addressPrefixes": [
+                            "[variables('vpnClientAddressPoolPrefix')]"
+                        ]
+                    },
+                    "vpnClientRootCertificates": [
+                        {
+                            "name": "[parameters('clientRootCertName')]",
+                            "properties": {
+                                "PublicCertData": "[parameters('clientRootCertData')]"
+                            }
+                        }
+                    ],
+                    "vpnClientProtocols": [
+                        "OpenVPN"
+                    ]
                 }
             }
         },
